@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Usuarios')}"></head>
+<body>
+<header th:replace="~{fragments/layout :: header}"></header>
+<main class="container">
+  <div class="page-heading"><div><span class="eyebrow">Administración</span><h1>Usuarios del portal</h1><p>Consulta las cuentas y administra el acceso de los apoderados.</p></div></div>
+  <div th:replace="~{fragments/layout :: messages}"></div>
+  <section class="card" aria-labelledby="users-title">
+    <div class="card-heading"><h2 id="users-title">Cuentas registradas</h2><span class="muted text-small" th:text="${#lists.size(users)} + ' usuario(s)'">0 usuarios</span></div>
+    <div class="table-scroll">
+      <table><thead><tr><th scope="col">Usuario</th><th scope="col">Rol</th><th scope="col">Registro</th><th scope="col">Acceso</th><th scope="col">Acción</th></tr></thead>
+        <tbody><tr th:each="user : ${users}">
+          <td><strong th:text="${user.fullName}">Nombre</strong><small th:text="${user.email}">correo@ejemplo.com</small></td>
+          <td th:text="${user.role.name() == 'APODERADO' ? 'Apoderado' : (user.role.name() == 'ADMISION' ? 'Admisiones' : 'Administrador')}">Apoderado</td>
+          <td class="nowrap" th:text="${#temporals.format(user.createdAt, 'dd/MM/yyyy', 'America/Lima')}">01/01/2027</td>
+          <td><span class="badge" th:classappend="${user.enabled ? 'active' : 'inactive'}" th:text="${user.enabled ? 'Habilitado' : 'Suspendido'}">Habilitado</span></td>
+          <td class="text-right">
+            <form th:if="${user.role.name() == 'APODERADO'}" th:action="@{/admin/usuarios/{id}/estado(id=${user.id})}" method="post" th:attr="data-confirm=${user.enabled ? '¿Deseas suspender el acceso de este apoderado?' : '¿Deseas habilitar el acceso de este apoderado?'}">
+              <input type="hidden" name="enabled" th:value="${!user.enabled}"><button class="button button-quiet button-small" type="submit" th:text="${user.enabled ? 'Suspender' : 'Habilitar'}">Suspender</button>
+            </form>
+            <span class="muted text-small" th:unless="${user.role.name() == 'APODERADO'}">Cuenta de personal</span>
+          </td>
+        </tr></tbody>
+      </table>
+    </div>
+    <div class="table-footnote">Las cuentas suspendidas no pueden acceder al portal. Las solicitudes e historial se conservan.</div>
+  </section>
+</main>
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+</body>
+</html>

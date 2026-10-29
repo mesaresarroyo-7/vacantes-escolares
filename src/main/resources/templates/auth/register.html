@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Crear cuenta')}"></head>
+<body>
+<header th:replace="~{fragments/layout :: header}"></header>
+<main class="auth-container auth-container-wide">
+  <div class="auth-heading"><span class="eyebrow">Registro de apoderados</span><h1>Comienza tu solicitud</h1><p>Crea tu cuenta para registrar al estudiante y solicitar una vacante.</p></div>
+  <div th:replace="~{fragments/layout :: messages}"></div>
+  <section class="card auth-card">
+    <form th:action="@{/registro}" th:object="${registrationForm}" method="post">
+      <div class="alert alert-error" th:if="${#fields.hasGlobalErrors()}" role="alert"><ul><li th:each="err : ${#fields.globalErrors()}" th:text="${err}">Revisa los datos.</li></ul></div>
+      <div class="field-grid">
+        <div class="field field-full"><label for="fullName">Nombre completo <span class="required">*</span></label><input id="fullName" th:field="*{fullName}" type="text" autocomplete="name" maxlength="100" required th:errorclass="field-invalid"><span class="field-error" th:if="${#fields.hasErrors('fullName')}" th:errors="*{fullName}"></span></div>
+        <div class="field"><label for="email">Correo electrónico <span class="required">*</span></label><input id="email" th:field="*{email}" type="email" autocomplete="email" placeholder="nombre@correo.com" maxlength="190" required th:errorclass="field-invalid"><span class="field-error" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></span></div>
+        <div class="field"><label for="phone">Celular <span class="required">*</span></label><input id="phone" th:field="*{phone}" type="tel" autocomplete="tel-national" inputmode="numeric" placeholder="9 dígitos" pattern="[0-9]{9}" maxlength="9" required th:errorclass="field-invalid"><span class="field-error" th:if="${#fields.hasErrors('phone')}" th:errors="*{phone}"></span></div>
+        <div class="field"><label for="password">Contraseña <span class="required">*</span></label><input id="password" name="password" type="password" autocomplete="new-password" minlength="10" maxlength="128" required aria-describedby="password-help"><span class="field-help" id="password-help">Usa al menos 10 caracteres. Combina palabras, números y símbolos.</span><span class="field-error" th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></span></div>
+        <div class="field"><label for="confirmPassword">Confirmar contraseña <span class="required">*</span></label><input id="confirmPassword" name="confirmPassword" type="password" autocomplete="new-password" minlength="10" maxlength="128" required><span class="field-error" th:if="${#fields.hasErrors('confirmPassword')}" th:errors="*{confirmPassword}"></span></div>
+      </div>
+      <div class="captcha-box" th:if="${captchaMode == 'local'}">
+        <p class="captcha-title">Verificación de registro</p>
+        <p class="field-help mb-0">Verificación local para esta demostración.</p>
+        <div class="field"><label class="field-label" for="captchaAnswer" th:text="'Resuelve: ' + ${captchaQuestion}">Resuelve la operación</label><input id="captchaAnswer" name="captchaAnswer" type="text" inputmode="numeric" autocomplete="off" maxlength="3" required th:errorclass="field-invalid"><span class="field-error" th:if="${#fields.hasErrors('captchaAnswer')}" th:errors="*{captchaAnswer}"></span></div>
+      </div>
+      <div class="captcha-box" th:if="${captchaMode == 'google'}">
+        <div class="g-recaptcha" th:attr="data-sitekey=${recaptchaSiteKey}"></div>
+        <span class="field-error" th:if="${#fields.hasErrors('captchaAnswer')}" th:errors="*{captchaAnswer}"></span>
+      </div>
+      <button class="button button-full" type="submit">Crear mi cuenta de apoderado</button>
+    </form>
+    <p class="auth-alternate">¿Ya tienes una cuenta? <a th:href="@{/login}">Ingresa aquí</a></p>
+  </section>
+</main>
+<script th:if="${captchaMode == 'google'}" src="https://www.google.com/recaptcha/api.js?hl=es" async defer></script>
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+</body>
+</html>

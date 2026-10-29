@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Detalle de solicitud')}"></head>
+<body>
+<header th:replace="~{fragments/layout :: header}"></header>
+<main class="container">
+  <a class="back-link" th:href="${staffView} ? @{/admision} : @{/solicitudes}" th:text="${staffView ? '← Volver a admisiones' : '← Volver a mis solicitudes'}">Volver</a>
+  <div class="page-heading detail-heading">
+    <div><span class="eyebrow">Solicitud de vacante</span><h1 th:text="${schoolApplication.studentFullName}">Nombre del estudiante</h1><span class="reference" th:text="${schoolApplication.reference}">VAC-2027-0001</span></div>
+    <span class="badge" th:classappend="${schoolApplication.status.cssClass}" th:text="${schoolApplication.status.label}">Enviada</span>
+  </div>
+  <div th:replace="~{fragments/layout :: messages}"></div>
+  <div class="alert" th:if="${schoolApplication.reviewNote != null and !#strings.isEmpty(schoolApplication.reviewNote)}"
+       th:classappend="${schoolApplication.status.name() == 'OBSERVADA'} ? 'alert-warning' : 'alert-info'">
+    <strong>Respuesta de admisiones</strong>
+    <div class="preserve-lines" th:text="${schoolApplication.reviewNote}">Observaciones de la solicitud.</div>
+  </div>
+  <div class="detail-grid">
+    <div class="detail-main">
+      <section class="card" aria-labelledby="student-title">
+        <div class="card-heading"><h2 id="student-title">Información del estudiante</h2></div>
+        <div class="card-pad"><dl class="data-list">
+          <div><dt>Nombres</dt><dd th:text="${schoolApplication.studentFirstNames}">Nombres</dd></div>
+          <div><dt>Apellidos</dt><dd th:text="${schoolApplication.studentLastNames}">Apellidos</dd></div>
+          <div><dt>DNI</dt><dd th:text="${schoolApplication.studentDocument}">00000000</dd></div>
+          <div><dt>Fecha de nacimiento</dt><dd th:text="${#temporals.format(schoolApplication.birthDate, 'dd/MM/yyyy')}">01/01/2015</dd></div>
+        </dl></div>
+      </section>
+      <section class="card" aria-labelledby="vacancy-title">
+        <div class="card-heading"><h2 id="vacancy-title">Vacante solicitada</h2></div>
+        <div class="card-pad"><dl class="data-list">
+          <div><dt>Grado</dt><dd th:text="${schoolApplication.offer.grade.label}">Grado</dd></div>
+          <div><dt>Periodo académico</dt><dd th:text="${schoolApplication.offer.schoolYear}">2027</dd></div>
+          <div><dt>Sede</dt><dd th:text="${schoolApplication.offer.campus}">Sede de referencia</dd></div>
+          <div><dt>Fecha de envío</dt><dd th:text="${#temporals.format(schoolApplication.createdAt, 'dd/MM/yyyy HH:mm', 'America/Lima')}">01/01/2027</dd></div>
+          <div class="span-full" th:if="${schoolApplication.guardianMessage != null and !#strings.isEmpty(schoolApplication.guardianMessage)}"><dt>Información del apoderado</dt><dd class="preserve-lines" th:text="${schoolApplication.guardianMessage}">Información adicional.</dd></div>
+        </dl></div>
+      </section>
+      <section class="card" aria-labelledby="guardian-title">
+        <div class="card-heading"><h2 id="guardian-title">Datos del apoderado</h2></div>
+        <div class="card-pad"><dl class="data-list">
+          <div class="span-full"><dt>Nombre completo</dt><dd th:text="${schoolApplication.guardian.fullName}">Nombre del apoderado</dd></div>
+          <div><dt>Correo electrónico</dt><dd th:text="${schoolApplication.guardian.email}">correo@ejemplo.com</dd></div>
+          <div><dt>Celular</dt><dd th:text="${schoolApplication.guardian.phone}">999999999</dd></div>
+        </dl></div>
+      </section>
+      <section class="card" aria-labelledby="history-title">
+        <div class="card-heading"><div><h2 id="history-title">Historial de la solicitud</h2><p>Consulta los cambios y las respuestas recibidas.</p></div></div>
+        <div class="card-pad">
+          <p class="muted text-small mb-0" th:if="${#lists.isEmpty(history)}">La solicitud todavía no tiene actualizaciones.</p>
+          <ol class="timeline" th:unless="${#lists.isEmpty(history)}">
+            <li th:each="event : ${history}">
+              <strong th:text="${event.toStatus.label}">Enviada</strong>
+              <time th:text="${#temporals.format(event.createdAt, 'dd/MM/yyyy HH:mm', 'America/Lima')}">01/01/2027 10:00</time>
+              <span class="actor" th:text="${event.actor.fullName}">Usuario</span>
+              <p class="preserve-lines" th:if="${event.note != null and !#strings.isEmpty(event.note)}" th:text="${event.note}">Detalle del cambio.</p>
+            </li>
+          </ol>
+        </div>
+      </section>
+    </div>
+    <aside class="detail-side">
+      <section class="card card-pad" th:if="${!staffView}" aria-labelledby="next-title">
+        <span class="eyebrow">Próximo paso</span><h2 id="next-title">Seguimiento</h2>
+        <p class="side-note" th:if="${schoolApplication.status.name() == 'ENVIADA'}">Admisiones recibió tu solicitud. Puedes consultar aquí cualquier actualización.</p>
+        <p class="side-note" th:if="${schoolApplication.status.name() == 'EN_REVISION'}">El equipo de admisiones está revisando tu solicitud. Te comunicaremos la respuesta en esta página.</p>
+        <p class="side-note" th:if="${schoolApplication.status.name() == 'OBSERVADA'}">Revisa las observaciones, corrige la información solicitada y vuelve a enviarla.</p>
+        <p class="side-note" th:if="${schoolApplication.status.name() == 'APROBADA'}">Tu solicitud fue aprobada en esta demostración. Consulta la respuesta de admisiones para conocer el detalle.</p>
+        <p class="side-note" th:if="${schoolApplication.status.name() == 'RECHAZADA'}">Tu solicitud recibió una respuesta final. Revisa el motivo registrado por admisiones.</p>
+        <p class="side-note" th:if="${schoolApplication.status.name() == 'RETIRADA'}">Retiraste esta solicitud. Su historial se conserva para tu consulta.</p>
+        <a class="button button-full button-secondary" th:if="${schoolApplication.editable}" th:href="@{/solicitudes/{id}/editar(id=${schoolApplication.id})}" th:text="${schoolApplication.status.name() == 'OBSERVADA' ? 'Corregir y reenviar' : 'Editar solicitud'}">Editar solicitud</a>
+        <div class="withdraw-box" th:if="${schoolApplication.withdrawable}">
+          <p>Si ya no deseas continuar con el proceso, puedes retirar esta solicitud.</p>
+          <form th:action="@{/solicitudes/{id}/retirar(id=${schoolApplication.id})}" method="post" data-confirm="¿Deseas retirar esta solicitud? Su historial se conservará.">
+            <input type="hidden" name="version" th:value="${schoolApplication.version}"><button class="button button-danger button-small" type="submit">Retirar solicitud</button>
+          </form>
+        </div>
+      </section>
+      <section class="card card-pad" th:if="${staffView and schoolApplication.withdrawable}" aria-labelledby="review-title">
+        <span class="eyebrow">Admisiones</span><h2 id="review-title">Revisar solicitud</h2>
+        <p class="side-note">Actualiza el estado y deja una respuesta para el apoderado.</p>
+        <form class="review-form" th:action="@{/admision/{id}/revision(id=${schoolApplication.id})}" th:object="${reviewForm}" method="post">
+          <input type="hidden" th:field="*{version}">
+          <div class="alert alert-error" th:if="${#fields.hasGlobalErrors()}" role="alert"><ul><li th:each="err : ${#fields.globalErrors()}" th:text="${err}">Revisa el cambio.</li></ul></div>
+          <div class="field"><label for="status">Nuevo estado <span class="required">*</span></label><select id="status" th:field="*{status}" required th:errorclass="field-invalid"><option value="">Selecciona un estado</option><option th:each="option : ${reviewStatuses}" th:value="${option.name()}" th:text="${option.label}">Estado</option></select><span class="field-error" th:if="${#fields.hasErrors('status')}" th:errors="*{status}"></span></div>
+          <div class="field"><label for="note">Respuesta al apoderado</label><textarea id="note" th:field="*{note}" rows="5" maxlength="1200" data-count="review-count" placeholder="Escribe una respuesta clara o indica qué debe corregirse." th:errorclass="field-invalid"></textarea><span class="field-help">Obligatoria al observar o rechazar. <span id="review-count">0</span>/1200</span><span class="field-error" th:if="${#fields.hasErrors('note')}" th:errors="*{note}"></span></div>
+          <span class="field-error" th:if="${#fields.hasErrors('version')}" th:errors="*{version}"></span>
+          <button class="button" type="submit">Guardar revisión</button>
+        </form>
+      </section>
+      <section class="card card-pad" th:if="${staffView and !schoolApplication.withdrawable}">
+        <span class="eyebrow">Proceso cerrado</span><h2>Solicitud finalizada</h2><p class="side-note mb-0">Esta solicitud ya tiene un estado final. Puedes consultar sus datos y el historial de revisión.</p>
+      </section>
+      <section class="card card-pad">
+        <h3>Información del proceso</h3><p class="side-note">Periodo <strong th:text="${schoolApplication.offer.schoolYear}">2027</strong> · <span th:text="${schoolApplication.offer.campus}">Sede de referencia</span></p>
+        <p class="side-note mb-0">Última actualización<br><strong th:text="${#temporals.format(schoolApplication.updatedAt, 'dd/MM/yyyy HH:mm', 'America/Lima')}">01/01/2027 10:00</strong></p>
+      </section>
+    </aside>
+  </div>
+</main>
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+</body>
+</html>

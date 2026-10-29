@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Inicio')}"></head>
+<body>
+<header th:replace="~{fragments/layout :: header}"></header>
+<main class="container">
+  <section class="hero" aria-labelledby="home-title">
+    <div>
+      <span class="eyebrow" th:text="'Admisión escolar ' + ${schoolYear}">Admisión escolar 2027</span>
+      <h1 id="home-title">El primer paso para una nueva etapa.</h1>
+      <p class="hero-intro">Solicita una vacante y sigue el avance de tu solicitud en un solo lugar, con comunicación directa del área de admisiones.</p>
+      <div class="actions" th:if="${currentUser == null}">
+        <a class="button" th:href="@{/registro}">Solicitar una vacante <span aria-hidden="true">→</span></a>
+        <a class="button button-secondary" th:href="@{/login}">Ya tengo una cuenta</a>
+      </div>
+      <div class="actions" th:if="${currentUser != null}">
+        <a class="button" th:href="@{/panel}">Ir a mi panel <span aria-hidden="true">→</span></a>
+      </div>
+      <p class="hero-caption">Inicial, primaria y secundaria · <span th:text="${campusName}">Sede de referencia</span></p>
+    </div>
+    <aside class="process-card" aria-labelledby="process-title">
+      <span class="eyebrow">Un proceso sencillo</span>
+      <h2 id="process-title">Acompañamos tu solicitud</h2>
+      <p>El apoderado puede consultar cada actualización desde su cuenta.</p>
+      <ol class="process-steps">
+        <li><strong>Crea tu cuenta</strong><span>Registra tus datos como padre, madre o apoderado.</span></li>
+        <li><strong>Completa la solicitud</strong><span>Indica los datos del estudiante y el grado al que postula.</span></li>
+        <li><strong>Consulta la respuesta</strong><span>Revisa el estado y atiende las observaciones de admisiones.</span></li>
+      </ol>
+    </aside>
+  </section>
+  <section class="home-section" aria-labelledby="levels-title">
+    <h2 id="levels-title">Una solicitud para cada etapa escolar</h2>
+    <p>Selecciona el grado correspondiente al completar tu solicitud.</p>
+    <div class="level-grid">
+      <article class="level-card"><span class="level-number">01</span><h3>Inicial</h3><p>Solicitudes para 4 y 5 años.</p></article>
+      <article class="level-card"><span class="level-number">02</span><h3>Primaria</h3><p>Del primero al sexto grado.</p></article>
+      <article class="level-card"><span class="level-number">03</span><h3>Secundaria</h3><p>Del primero al quinto grado.</p></article>
+    </div>
+  </section>
+</main>
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+</body>
+</html>

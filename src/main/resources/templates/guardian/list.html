@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Mis solicitudes')}"></head>
+<body>
+<header th:replace="~{fragments/layout :: header}"></header>
+<main class="container">
+  <div class="page-heading">
+    <div><span class="eyebrow" th:text="'Admisión ' + ${schoolYear}">Admisión 2027</span><h1>Mis solicitudes</h1><p>Consulta el avance de tus solicitudes y las respuestas de admisiones.</p></div>
+    <a class="button" th:href="@{/solicitudes/nueva}"><span aria-hidden="true">＋</span> Nueva solicitud</a>
+  </div>
+  <div th:replace="~{fragments/layout :: messages}"></div>
+  <section class="stats-grid" aria-label="Resumen de solicitudes">
+    <div class="stat-card"><span>Solicitudes registradas</span><strong th:text="${total}">0</strong></div>
+    <div class="stat-card"><span>Pendientes de respuesta</span><strong th:text="${pending}">0</strong></div>
+    <div class="stat-card"><span>Aprobadas</span><strong th:text="${approved}">0</strong></div>
+  </section>
+  <section class="card" aria-labelledby="applications-title">
+    <div class="card-heading"><div><h2 id="applications-title">Tus solicitudes de vacante</h2><p>Abre una solicitud para ver el detalle y su historial.</p></div></div>
+    <div class="empty-state" th:if="${#lists.isEmpty(applications)}"><span class="empty-icon" aria-hidden="true">＋</span><h2>Aún no registraste solicitudes</h2><p>Completa los datos del estudiante para comenzar. Podrás seguir el proceso desde esta página.</p><a class="button button-secondary" th:href="@{/solicitudes/nueva}">Crear primera solicitud</a></div>
+    <div class="table-scroll" th:unless="${#lists.isEmpty(applications)}">
+      <table><thead><tr><th scope="col">Estudiante</th><th scope="col">Grado</th><th scope="col">Fecha de envío</th><th scope="col">Estado</th><th scope="col"><span class="muted">Detalle</span></th></tr></thead>
+        <tbody><tr th:each="item : ${applications}">
+          <td><strong th:text="${item.studentFullName}">Estudiante</strong><small class="reference" th:text="${item.reference}">VAC-2027-0001</small></td>
+          <td><span th:text="${item.offer.grade.label}">Grado</span><small th:text="${item.offer.schoolYear}">2027</small></td>
+          <td class="nowrap" th:text="${#temporals.format(item.createdAt, 'dd/MM/yyyy', 'America/Lima')}">01/01/2027</td>
+          <td><span class="badge" th:classappend="${item.status.cssClass}" th:text="${item.status.label}">Enviada</span></td>
+          <td class="text-right"><a class="table-link" th:href="@{/solicitudes/{id}(id=${item.id})}">Ver solicitud <span aria-hidden="true">→</span></a></td>
+        </tr></tbody>
+      </table>
+    </div>
+    <div class="table-footnote">Si una solicitud tiene observaciones, abre su detalle para revisarlas y corregir la información.</div>
+  </section>
+</main>
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+</body>
+</html>

@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Admisiones')}"></head>
+<body>
+<header th:replace="~{fragments/layout :: header}"></header>
+<main class="container">
+  <div class="page-heading"><div><span class="eyebrow">Área de admisiones</span><h1>Solicitudes de vacante</h1><p>Revisa las solicitudes de los apoderados y comunica el avance del proceso.</p></div><div class="context-strip mb-0"><span>Periodo <strong th:text="${schoolYear}">2027</strong></span></div></div>
+  <div th:replace="~{fragments/layout :: messages}"></div>
+  <section class="stats-grid stats-grid-four" aria-label="Resumen de admisiones">
+    <div class="stat-card"><span>Solicitudes totales</span><strong th:text="${total}">0</strong></div>
+    <div class="stat-card"><span>Pendientes de revisión</span><strong th:text="${pending}">0</strong></div>
+    <div class="stat-card"><span>Observadas</span><strong th:text="${observed}">0</strong></div>
+    <div class="stat-card"><span>Aprobadas</span><strong th:text="${approved}">0</strong></div>
+  </section>
+  <section class="card" aria-labelledby="staff-list-title">
+    <div class="card-heading"><h2 id="staff-list-title">Bandeja de solicitudes</h2><span class="muted text-small" th:text="${#lists.size(applications)} + ' resultado(s)'">0 resultados</span></div>
+    <form class="filter-bar" th:action="@{/admision}" method="get">
+      <div class="field field-search"><label for="query">Buscar solicitud</label><input id="query" name="query" type="search" th:value="${query}" maxlength="80" placeholder="Nombre del estudiante, apoderado o código"></div>
+      <div class="field field-select"><label for="statusFilter">Estado</label><select id="statusFilter" name="status"><option value="">Todos los estados</option><option th:each="option : ${statuses}" th:value="${option.name()}" th:text="${option.label}" th:selected="${statusFilter == option.name()}">Estado</option></select></div>
+      <button class="button button-small" type="submit">Filtrar</button><a class="button button-quiet button-small" th:href="@{/admision}">Limpiar</a>
+    </form>
+    <div class="empty-state" th:if="${#lists.isEmpty(applications)}"><span class="empty-icon" aria-hidden="true">⌕</span><h2>No encontramos solicitudes</h2><p>Revisa el texto de búsqueda o selecciona otro estado.</p><a class="button button-secondary" th:href="@{/admision}">Ver todas</a></div>
+    <div class="table-scroll" th:unless="${#lists.isEmpty(applications)}">
+      <table><thead><tr><th scope="col">Estudiante / solicitud</th><th scope="col">Apoderado</th><th scope="col">Grado</th><th scope="col">Fecha</th><th scope="col">Estado</th><th scope="col">Revisión</th></tr></thead>
+        <tbody><tr th:each="item : ${applications}">
+          <td><strong th:text="${item.studentFullName}">Estudiante</strong><small class="reference" th:text="${item.reference}">VAC-2027-0001</small></td>
+          <td><span th:text="${item.guardian.fullName}">Apoderado</span><small th:text="${item.guardian.email}">correo@ejemplo.com</small></td>
+          <td class="nowrap" th:text="${item.offer.grade.label}">Grado</td>
+          <td class="nowrap" th:text="${#temporals.format(item.createdAt, 'dd/MM/yyyy', 'America/Lima')}">01/01/2027</td>
+          <td><span class="badge" th:classappend="${item.status.cssClass}" th:text="${item.status.label}">Enviada</span></td>
+          <td class="text-right"><a class="table-link" th:href="@{/admision/{id}(id=${item.id})}">Ver detalle →</a></td>
+        </tr></tbody>
+      </table>
+    </div>
+  </section>
+</main>
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+</body>
+</html>

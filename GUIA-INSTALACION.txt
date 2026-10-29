@@ -1,0 +1,142 @@
+﻿
+1. INSTALAR LAS HERRAMIENTAS
+================================================================
+Vacantes escolares - guía para otra PC con Windows 10/11 de 64 bits.
+Usa el archivo vacantes-escolares-solo-proyecto.zip. Las herramientas se instalan por separado. Guía revisada el 26/10/2026.
+Herramienta | Qué descargar | Enlace oficial
+Java / JDK 25 | Windows x64 Installer | Descargar JDK 25: https://www.oracle.com/java/technologies/downloads/#jdk25-windows
+Maven 3.9.16 | Previous Stable 3.9.x: Binary zip archive | Descargar Maven: https://maven.apache.org/download.cgi
+IntelliJ IDEA | Instalador para Windows | Descargar IntelliJ: https://www.jetbrains.com/idea/download/?section=windows
+MySQL Server 8.4 LTS | Windows 64-bit: MSI Installer | Descargar MySQL 8.4: https://dev.mysql.com/downloads/mysql/8.4.html
+MySQL Workbench | Instalador para Windows | Descargar Workbench: https://dev.mysql.com/downloads/workbench/
+
+
+Java y Maven
+1. Instala JDK 25 y anota la carpeta que creó, por ejemplo C:\Program Files\Java\jdk-25. Debe ser un JDK, con java y javac.
+2. En Windows busca Editar las variables de entorno de esta cuenta. Crea JAVA_HOME con la carpeta del JDK, sin añadir \bin. En Path añade %JAVA_HOME%\bin.
+3. Extrae el ZIP de Maven, por ejemplo en C:\Herramientas. Añade a Path la carpeta bin real de Maven, por ejemplo C:\Herramientas\apache-maven-3.9.16\bin.
+4. Abre una terminal nueva y comprueba los comandos siguientes. Java y javac deben indicar 25; mvn -v también debe mostrar Java 25.
+
+java -version
+javac -version
+mvn -v
+
+Instala IntelliJ IDEA. MySQL Server y Workbench se preparan en la página siguiente. Si una herramienta ya está instalada con la versión indicada, úsala.
+Descargar JDK 25 para Windows: https://www.oracle.com/java/technologies/downloads/#jdk25-windows
+Descargar Maven / instrucciones de instalación: https://maven.apache.org/install.html
+Descargar IntelliJ IDEA: https://www.jetbrains.com/idea/download/?section=windows
+
+2. PREPARAR MYSQL
+================================================================
+
+Instalar y configurar el servidor
+1. Instala MySQL Server 8.4 LTS desde su MSI. Al terminar, ejecuta MySQL Configurator. Si pide un requisito como Visual C++, utiliza el enlace del instalador oficial.
+2. En Configurator elige Development, conexión TCP/IP y puerto 3306. Para esta ejecución local no hace falta habilitar acceso desde otras computadoras.
+3. Define tu propia contraseña de root y consérvala. Configura MySQL como servicio de Windows, aplica los cambios y comprueba que se inicia.
+4. Instala y abre MySQL Workbench. En Database Connections pulsa +. Usa método mysql / Standard TCP/IP, host 127.0.0.1, puerto 3306 y usuario root. Guarda la conexión y ábrela con tu contraseña de root.
+
+Crear la base vacía y su usuario
+Abre una pestaña SQL en esa conexión de root. Cambia el marcador de contraseña del bloque por una clave propia. Selecciona el bloque completo y ejecútalo con el botón del rayo.
+
+CREATE DATABASE vacantes_escolares
+  CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+CREATE USER 'vacantes_app'@'127.0.0.1'
+  IDENTIFIED BY 'REEMPLAZAR_POR_UNA_CLAVE_PROPIA';
+
+GRANT SELECT, INSERT, UPDATE, DELETE, CREATE, ALTER, DROP,
+      INDEX, REFERENCES
+  ON vacantes_escolares.* TO 'vacantes_app'@'127.0.0.1';
+
+La contraseña que elijas aquí será DB_PASSWORD en IntelliJ. La cuenta root sirve para esta preparación; la aplicación usará vacantes_app.
+Si la base o el usuario ya existen, utiliza sus datos y revisa sus permisos. No ejecutes manualmente V1__esquema_inicial.sql: Flyway creará las tablas al arrancar sobre la base vacía.
+Descargar MySQL Server 8.4 LTS: https://dev.mysql.com/downloads/mysql/8.4.html
+MySQL Configurator: opciones del servidor: https://dev.mysql.com/doc/refman/8.4/en/mysql-configurator-workflow-server.html
+Descargar MySQL Workbench: https://dev.mysql.com/downloads/workbench/
+
+3. ABRIR Y CONFIGURAR EL PROYECTO
+================================================================
+
+Importar en IntelliJ IDEA
+1. Extrae vacantes-escolares-solo-proyecto.zip en una carpeta local, por ejemplo C:\Proyectos. Localiza la carpeta vacantes-escolares que contiene pom.xml.
+2. En IntelliJ elige File > Open y abre pom.xml como proyecto Maven, o su carpeta. Confía en este proyecto. Si aparece la opción de exclusiones de Microsoft Defender, déjala desmarcada.
+3. En File > Project Structure > Project, selecciona JDK 25. Usa Add JDK from disk si falta. Espera la sincronización y descarga de dependencias Maven.
+4. Abre Run > Edit Configurations > + > Application. Nombre: Vacantes escolares. Main class: pe.edu.vacantes.VacantesApplication. JRE: JDK 25. Classpath/module: el módulo del proyecto.
+
+Introducir las variables de entorno
+En esa configuración abre Environment variables; si no aparece, actívalo en Modify options. Usa su tabla para añadir cada nombre y su valor. Aplica los cambios con Apply / OK.
+Variable | Valor que debes poner
+DB_USERNAME | vacantes_app
+DB_PASSWORD | La contraseña que elegiste para vacantes_app en MySQL.
+DEMO_ADMIN_PASSWORD | Una clave propia para el administrador (mínimo 10 caracteres).
+DEMO_ADMISSIONS_PASSWORD | Una clave propia para admisiones (mínimo 10 caracteres).
+DEMO_GUARDIAN_PASSWORD | Una clave propia para el apoderado (mínimo 10 caracteres).
+DEMO_OTHER_PASSWORD | Una clave propia para el otro apoderado (mínimo 10 caracteres).
+CAPTCHA_MODE | local
+
+En una base nueva son necesarias las cuatro claves DEMO_*, además de DB_PASSWORD. No son la contraseña root. El proyecto ya apunta a 127.0.0.1:3306 y a la base vacantes_escolares; con esos valores no necesitas añadir DB_URL.
+IntelliJ: configuración Application: https://www.jetbrains.com/help/idea/run-debug-configuration-java-application.html
+IntelliJ: variables de entorno: https://www.jetbrains.com/help/idea/program-arguments-and-environment-variables.html
+
+4. EJECUTAR Y VER LOS DATOS
+================================================================
+
+Primer inicio
+1. Comprueba que MySQL está iniciado. En IntelliJ selecciona la configuración Vacantes escolares y pulsa Run (triángulo verde).
+2. Espera el mensaje Started VacantesApplication. En el primer inicio Flyway crea las tablas; después se generan las cuentas, los grados y tres solicitudes ficticias.
+3. Abre http://127.0.0.1:8087 en el navegador. El modo local muestra una operación aritmética para probar el registro. Google reCAPTCHA se configura en la página siguiente.
+Correo para iniciar sesión | Contraseña que elegiste en IntelliJ
+admin@colegio.test | Valor de DEMO_ADMIN_PASSWORD
+admisiones@colegio.test | Valor de DEMO_ADMISSIONS_PASSWORD
+apoderado@colegio.test | Valor de DEMO_GUARDIAN_PASSWORD
+otro@colegio.test | Valor de DEMO_OTHER_PASSWORD
+
+Prueba como apoderado: abre Mis solicitudes, corrige la solicitud observada y reenvíala. Luego entra como admisiones para revisarla. El administrador puede consultar usuarios y auditoría.
+
+Ver las tablas en Workbench
+1. Crea otra conexión llamada Vacantes escolares: método mysql, host 127.0.0.1, puerto 3306, usuario vacantes_app y Default Schema vacantes_escolares.
+2. Ábrela con la contraseña de vacantes_app. En SCHEMAS actualiza y despliega vacantes_escolares > Tables. Hay cinco tablas del portal y flyway_schema_history.
+3. Para ver una comprobación sencilla, abre SQL y ejecuta el bloque siguiente. Los resultados deben incluir las tablas y 13 ofertas en la base nueva de demostración.
+
+USE vacantes_escolares;
+SHOW TABLES;
+SELECT COUNT(*) AS ofertas FROM academic_offers;
+
+
+Detener, compilar y probar
+Detén el portal con el cuadrado rojo Stop de IntelliJ. Para comprobar o empaquetar el código, abre una terminal en la carpeta de pom.xml:
+
+mvn test
+mvn package
+
+El paquete compilado se genera en target/vacantes-escolares.jar. Las pruebas usan H2 en memoria. Las variables de Run en IntelliJ no se copian automáticamente a una terminal; para ejecutar con Maven o java -jar debes configurarlas también en esa terminal.
+
+5. GOOGLE RECAPTCHA Y AYUDA
+================================================================
+
+Activar la casilla de Google reCAPTCHA v2
+El modo local permite comprobar el arranque. Para demostrar Google reCAPTCHA en el curso, configura un sitio de desarrollo propio:
+1. Abre la consola de reCAPTCHA. Crea un sitio de reCAPTCHA v2, casilla “No soy un robot”, con una etiqueta como Vacantes escolares - Desarrollo.
+2. Añade los dominios localhost y 127.0.0.1, sin http://, rutas ni puerto. Obtén la clave del sitio y la clave secreta.
+3. En las variables de la misma configuración Run de IntelliJ añade los valores de la tabla y reinicia con Stop / Run.
+Variable | Valor
+CAPTCHA_MODE | google
+RECAPTCHA_SITE_KEY | La clave del sitio de tu registro de Google.
+RECAPTCHA_SECRET_KEY | La clave secreta de tu registro de Google.
+RECAPTCHA_HOSTNAMES | localhost,127.0.0.1
+
+Comprueba que /registro muestra “No soy un robot” y completa un registro de prueba. Cada compañero usa su configuración local; el ZIP no contiene claves reales ni los registros creados en otra PC.
+
+Si aparece un error
+Mensaje o situación | Qué revisar
+Connection refused / MySQL no responde | Inicia el servicio MySQL de Windows y comprueba el puerto 3306.
+Access denied | Revisa DB_USERNAME y DB_PASSWORD. Deben ser los de vacantes_app, con acceso a 127.0.0.1.
+Unknown database | Crea la base vacía vacantes_escolares en el servidor correcto.
+Faltan contraseñas DEMO_* | Completa las cuatro variables, con al menos 10 caracteres cada una, y reinicia.
+Java 25 no compatible / release 25 | Revisa el SDK del proyecto y la JRE de Run. mvn -v también debe mostrar Java 25.
+Port 8087 already in use | Detén otra instancia del portal. Si eliges APP_PORT=8088, abre el navegador en ese puerto.
+Una contraseña demo cambiada no funciona | Las variables solo crean cuentas nuevas. No modifican cuentas ya guardadas.
+
+Consola de reCAPTCHA: https://www.google.com/recaptcha/admin/create
+Google: validación de dominios / localhost: https://developers.google.com/recaptcha/docs/domain_validation
+Google: formato de los dominios: https://developers.google.com/recaptcha/docs/settings

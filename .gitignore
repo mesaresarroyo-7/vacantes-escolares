@@ -1,0 +1,9 @@
+/target/
+/.idea/
+*.iml
+/.local/
+/.env
+*.log
+*.pid
+*.clixml
+/.vscode/

@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:fragment="head(title)">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <title th:text="${title} + ' · Vacantes escolares'">Vacantes escolares</title>
+  <link rel="stylesheet" th:href="@{/css/app.css}">
+  <script th:src="@{/js/app.js}" defer></script>
+</head>
+<body>
+<header class="site-header" th:fragment="header">
+  <div class="header-inner">
+    <a class="brand" th:href="@{/}" aria-label="Vacantes escolares, inicio">
+      <span class="brand-mark" aria-hidden="true">V</span>
+      <span><strong>Vacantes escolares</strong><small>Admisión <span th:text="${schoolYear}">2027</span></small></span>
+    </a>
+    <nav class="main-nav" aria-label="Navegación principal">
+      <a th:if="${currentUser == null}" th:href="@{/login}" th:classappend="${activePath == '/login'} ? 'active'">Ingresar</a>
+      <a th:if="${currentUser == null}" th:href="@{/registro}" class="button button-small">Crear cuenta</a>
+      <a th:if="${currentUser != null and !staff}" th:href="@{/solicitudes}"
+         th:classappend="${#strings.startsWith(activePath, '/solicitudes')} ? 'active'">Mis solicitudes</a>
+      <a th:if="${currentUser != null and staff}" th:href="@{/admision}"
+         th:classappend="${#strings.startsWith(activePath, '/admision')} ? 'active'">Admisiones</a>
+      <a th:if="${currentUser != null and admin}" th:href="@{/admin/usuarios}"
+         th:classappend="${activePath == '/admin/usuarios'} ? 'active'">Usuarios</a>
+      <a th:if="${currentUser != null and admin}" th:href="@{/admin/auditoria}"
+         th:classappend="${activePath == '/admin/auditoria'} ? 'active'">Auditoría</a>
+    </nav>
+    <div class="account-menu" th:if="${currentUser != null}">
+      <div class="account-text"><strong th:text="${currentUser.fullName}">Nombre</strong><small
+          th:text="${currentUser.role.name() == 'APODERADO' ? 'Apoderado' : (currentUser.role.name() == 'ADMISION' ? 'Admisiones' : 'Administrador')}">Apoderado</small></div>
+      <form th:action="@{/logout}" method="post"><button class="button button-quiet button-small" type="submit">Salir</button></form>
+    </div>
+  </div>
+</header>
+<div class="flash-stack" th:fragment="messages" aria-live="polite">
+  <div class="alert alert-success" th:if="${success}" th:text="${success}">Operación realizada.</div>
+  <div class="alert alert-error" th:if="${error}" th:text="${error}" role="alert">Revisa la información.</div>
+</div>
+<footer class="site-footer" th:fragment="footer">
+  <div><strong>Vacantes escolares</strong><span>Prototipo académico · <span th:text="${referenceName}">Trilce (referencia académica)</span></span></div>
+  <span>Las solicitudes de esta demostración no constituyen una matrícula oficial.</span>
+</footer>
+</body>
+</html>

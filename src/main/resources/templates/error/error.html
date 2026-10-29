@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('No pudimos completar la acción')}"></head>
+<body>
+<header th:replace="~{fragments/layout :: header}"></header>
+<main class="container error-container">
+  <span class="error-code" th:text="${status}">404</span>
+  <h1 th:text="${title}">No encontramos esta página</h1>
+  <p th:text="${message}">Revisa la dirección o vuelve al inicio para continuar.</p>
+  <div class="actions"><a class="button" th:href="@{/panel}" th:if="${currentUser != null}">Volver a mi panel</a><a class="button" th:href="@{/}" th:if="${currentUser == null}">Volver al inicio</a><a class="button button-secondary" th:href="@{/login}" th:if="${currentUser == null}">Ingresar</a></div>
+</main>
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+</body>
+</html>

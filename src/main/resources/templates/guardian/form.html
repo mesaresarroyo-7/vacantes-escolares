@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head(${pageTitle})}"></head>
+<body>
+<header th:replace="~{fragments/layout :: header}"></header>
+<main class="container container-narrow">
+  <a class="back-link" th:href="@{/solicitudes}">← Volver a mis solicitudes</a>
+  <div class="page-heading"><div><span class="eyebrow">Solicitud de vacante</span><h1 th:text="${pageTitle}">Nueva solicitud</h1><p th:text="${editing ? 'Revisa las observaciones y actualiza la información antes de reenviar tu solicitud.' : 'Completa la información del estudiante. Admisiones revisará tu solicitud.'}">Completa la información del estudiante.</p></div></div>
+  <div th:replace="~{fragments/layout :: messages}"></div>
+  <div class="context-strip"><span>Periodo académico <strong th:text="${schoolYear}">2027</strong></span><span th:text="${campusName}">Sede de referencia</span><span>Los campos con <strong>*</strong> son obligatorios.</span></div>
+  <form class="card" th:action="${editing} ? @{/solicitudes/{id}/editar(id=${applicationId})} : @{/solicitudes/nueva}" th:object="${applicationForm}" method="post">
+    <input type="hidden" th:field="*{version}">
+    <section class="form-section">
+      <div class="alert alert-error" th:if="${#fields.hasGlobalErrors()}" role="alert"><ul><li th:each="err : ${#fields.globalErrors()}" th:text="${err}">Revisa la información.</li></ul></div>
+      <div class="form-section-title"><h2>Datos del estudiante</h2><p>Escribe los nombres y apellidos tal como figuran en su documento.</p></div>
+      <div class="field-grid">
+        <div class="field"><label for="studentFirstNames">Nombres <span class="required">*</span></label><input id="studentFirstNames" th:field="*{studentFirstNames}" type="text" autocomplete="off" maxlength="80" required th:errorclass="field-invalid"><span class="field-error" th:if="${#fields.hasErrors('studentFirstNames')}" th:errors="*{studentFirstNames}"></span></div>
+        <div class="field"><label for="studentLastNames">Apellidos <span class="required">*</span></label><input id="studentLastNames" th:field="*{studentLastNames}" type="text" autocomplete="off" maxlength="100" required th:errorclass="field-invalid"><span class="field-error" th:if="${#fields.hasErrors('studentLastNames')}" th:errors="*{studentLastNames}"></span></div>
+        <div class="field"><label for="studentDocument">DNI del estudiante <span class="required">*</span></label><input id="studentDocument" th:field="*{studentDocument}" type="text" inputmode="numeric" autocomplete="off" pattern="[0-9]{8}" maxlength="8" required th:errorclass="field-invalid"><span class="field-help">Ingresa los 8 dígitos del documento.</span><span class="field-error" th:if="${#fields.hasErrors('studentDocument')}" th:errors="*{studentDocument}"></span></div>
+        <div class="field"><label for="birthDate">Fecha de nacimiento <span class="required">*</span></label><input id="birthDate" th:field="*{birthDate}" type="date" autocomplete="off" required th:errorclass="field-invalid"><span class="field-error" th:if="${#fields.hasErrors('birthDate')}" th:errors="*{birthDate}"></span></div>
+      </div>
+    </section>
+    <section class="form-section">
+      <div class="form-section-title"><h2>Vacante solicitada</h2><p>Selecciona el grado al que postula el estudiante.</p></div>
+      <div class="field-grid">
+        <div class="field field-full"><label for="offerId">Grado <span class="required">*</span></label><select id="offerId" th:field="*{offerId}" required th:errorclass="field-invalid"><option value="">Selecciona un grado</option><option th:each="offer : ${offers}" th:value="${offer.id}" th:text="${offer.grade.label + ' · ' + offer.campus}">Grado</option></select><span class="field-error" th:if="${#fields.hasErrors('offerId')}" th:errors="*{offerId}"></span></div>
+        <div class="field field-full"><label for="guardianMessage">Información adicional <span class="muted">(opcional)</span></label><textarea id="guardianMessage" th:field="*{guardianMessage}" maxlength="1200" rows="4" data-count="message-count" placeholder="Indica alguna consulta o información que admisiones deba conocer." th:errorclass="field-invalid"></textarea><span class="field-help"><span id="message-count">0</span>/1200 caracteres</span><span class="field-error" th:if="${#fields.hasErrors('guardianMessage')}" th:errors="*{guardianMessage}"></span></div>
+      </div>
+    </section>
+    <div class="form-footer"><p>La solicitud quedará asociada a tu cuenta. Podrás consultar su estado y las observaciones de admisiones.</p><div class="actions"><a class="button button-quiet" th:href="@{/solicitudes}">Cancelar</a><button class="button" type="submit" th:text="${editing ? 'Guardar y reenviar' : 'Enviar solicitud'}">Enviar solicitud</button></div></div>
+  </form>
+</main>
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+</body>
+</html>

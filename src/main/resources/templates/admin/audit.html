@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Auditoría')}"></head>
+<body>
+<header th:replace="~{fragments/layout :: header}"></header>
+<main class="container">
+  <div class="page-heading"><div><span class="eyebrow">Administración</span><h1>Registro de actividad</h1><p>Consulta las acciones realizadas en el portal y su trazabilidad.</p></div></div>
+  <div th:replace="~{fragments/layout :: messages}"></div>
+  <section class="card" aria-labelledby="audit-title">
+    <div class="card-heading"><h2 id="audit-title">Eventos recientes</h2><span class="muted text-small">Últimos 150 eventos</span></div>
+    <div class="empty-state" th:if="${#lists.isEmpty(events)}"><span class="empty-icon" aria-hidden="true">≡</span><h2>Aún no hay actividad registrada</h2><p class="mb-0">Los eventos aparecerán cuando se utilice el portal.</p></div>
+    <div class="table-scroll" th:unless="${#lists.isEmpty(events)}">
+      <table class="compact-table"><thead><tr><th scope="col">Fecha y hora</th><th scope="col">Usuario</th><th scope="col">Acción</th><th scope="col">Referencia</th><th scope="col">Detalle</th></tr></thead>
+        <tbody><tr th:each="event : ${events}">
+          <td class="nowrap" th:text="${#temporals.format(event.createdAt, 'dd/MM/yyyy HH:mm', 'America/Lima')}">01/01/2027 10:00</td>
+          <td class="break-word" th:text="${event.actor}">Usuario</td>
+          <td class="text-small" th:text="${event.action}">Acción</td>
+          <td class="audit-target" th:text="${event.target}">Referencia</td>
+          <td class="text-small break-word" th:text="${event.detail}">Detalle del evento</td>
+        </tr></tbody>
+      </table>
+    </div>
+    <div class="table-footnote">Las horas se muestran en la zona horaria de Lima, Perú.</div>
+  </section>
+</main>
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+</body>
+</html>
