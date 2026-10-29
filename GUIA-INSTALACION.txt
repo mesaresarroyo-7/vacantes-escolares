@@ -1,8 +1,8 @@
 ﻿
 1. INSTALAR LAS HERRAMIENTAS
 ================================================================
-Vacantes escolares - guía para otra PC con Windows 10/11 de 64 bits.
-Usa el archivo vacantes-escolares-solo-proyecto.zip. Las herramientas se instalan por separado. Guía revisada el 26/10/2026.
+Vacantes escolares - Google reCAPTCHA v2 - Windows de 64 bits.
+Usa vacantes-escolares-google.zip. Las herramientas se instalan por separado. Configura tus claves de Google antes del primer inicio. Guía revisada el 28/10/2026.
 Herramienta | Qué descargar | Enlace oficial
 Java / JDK 25 | Windows x64 Installer | Descargar JDK 25: https://www.oracle.com/java/technologies/downloads/#jdk25-windows
 Maven 3.9.16 | Previous Stable 3.9.x: Binary zip archive | Descargar Maven: https://maven.apache.org/download.cgi
@@ -58,7 +58,7 @@ Descargar MySQL Workbench: https://dev.mysql.com/downloads/workbench/
 ================================================================
 
 Importar en IntelliJ IDEA
-1. Extrae vacantes-escolares-solo-proyecto.zip en una carpeta local, por ejemplo C:\Proyectos. Localiza la carpeta vacantes-escolares que contiene pom.xml.
+1. Extrae vacantes-escolares-google.zip en una carpeta local, por ejemplo C:\Proyectos. Localiza la carpeta vacantes-escolares que contiene pom.xml.
 2. En IntelliJ elige File > Open y abre pom.xml como proyecto Maven, o su carpeta. Confía en este proyecto. Si aparece la opción de exclusiones de Microsoft Defender, déjala desmarcada.
 3. En File > Project Structure > Project, selecciona JDK 25. Usa Add JDK from disk si falta. Espera la sincronización y descarga de dependencias Maven.
 4. Abre Run > Edit Configurations > + > Application. Nombre: Vacantes escolares. Main class: pe.edu.vacantes.VacantesApplication. JRE: JDK 25. Classpath/module: el módulo del proyecto.
@@ -72,9 +72,11 @@ DEMO_ADMIN_PASSWORD | Una clave propia para el administrador (mínimo 10 caracte
 DEMO_ADMISSIONS_PASSWORD | Una clave propia para admisiones (mínimo 10 caracteres).
 DEMO_GUARDIAN_PASSWORD | Una clave propia para el apoderado (mínimo 10 caracteres).
 DEMO_OTHER_PASSWORD | Una clave propia para el otro apoderado (mínimo 10 caracteres).
-CAPTCHA_MODE | local
+CAPTCHA_MODE | google (ya es el valor predeterminado)
+RECAPTCHA_SITE_KEY | Tu clave del sitio de Google reCAPTCHA v2.
+RECAPTCHA_SECRET_KEY | Tu clave secreta de Google reCAPTCHA v2.
 
-En una base nueva son necesarias las cuatro claves DEMO_*, además de DB_PASSWORD. No son la contraseña root. El proyecto ya apunta a 127.0.0.1:3306 y a la base vacantes_escolares; con esos valores no necesitas añadir DB_URL.
+Antes de pulsar Run, obtén tus claves de Google siguiendo la página 5. En una base nueva también necesitas las cuatro claves DEMO_* y DB_PASSWORD. La conexión ya apunta a 127.0.0.1:3306 y a vacantes_escolares; con esos datos no necesitas DB_URL.
 IntelliJ: configuración Application: https://www.jetbrains.com/help/idea/run-debug-configuration-java-application.html
 IntelliJ: variables de entorno: https://www.jetbrains.com/help/idea/program-arguments-and-environment-variables.html
 
@@ -84,7 +86,7 @@ IntelliJ: variables de entorno: https://www.jetbrains.com/help/idea/program-argu
 Primer inicio
 1. Comprueba que MySQL está iniciado. En IntelliJ selecciona la configuración Vacantes escolares y pulsa Run (triángulo verde).
 2. Espera el mensaje Started VacantesApplication. En el primer inicio Flyway crea las tablas; después se generan las cuentas, los grados y tres solicitudes ficticias.
-3. Abre http://127.0.0.1:8087 en el navegador. El modo local muestra una operación aritmética para probar el registro. Google reCAPTCHA se configura en la página siguiente.
+3. Abre http://127.0.0.1:8087 en el navegador. El registro debe mostrar la casilla de Google No soy un robot. Sin claves de Google la aplicación no inicia; no vuelve al CAPTCHA de números automáticamente.
 Correo para iniciar sesión | Contraseña que elegiste en IntelliJ
 admin@colegio.test | Valor de DEMO_ADMIN_PASSWORD
 admisiones@colegio.test | Valor de DEMO_ADMISSIONS_PASSWORD
@@ -115,7 +117,7 @@ El paquete compilado se genera en target/vacantes-escolares.jar. Las pruebas usa
 ================================================================
 
 Activar la casilla de Google reCAPTCHA v2
-El modo local permite comprobar el arranque. Para demostrar Google reCAPTCHA en el curso, configura un sitio de desarrollo propio:
+Este paquete utiliza Google reCAPTCHA v2 por defecto. Prepara tus claves antes del primer arranque. Configura un sitio de desarrollo propio:
 1. Abre la consola de reCAPTCHA. Crea un sitio de reCAPTCHA v2, casilla “No soy un robot”, con una etiqueta como Vacantes escolares - Desarrollo.
 2. Añade los dominios localhost y 127.0.0.1, sin http://, rutas ni puerto. Obtén la clave del sitio y la clave secreta.
 3. En las variables de la misma configuración Run de IntelliJ añade los valores de la tabla y reinicia con Stop / Run.
@@ -132,6 +134,7 @@ Mensaje o situación | Qué revisar
 Connection refused / MySQL no responde | Inicia el servicio MySQL de Windows y comprueba el puerto 3306.
 Access denied | Revisa DB_USERNAME y DB_PASSWORD. Deben ser los de vacantes_app, con acceso a 127.0.0.1.
 Unknown database | Crea la base vacía vacantes_escolares en el servidor correcto.
+Faltan claves de reCAPTCHA | Configura RECAPTCHA_SITE_KEY y RECAPTCHA_SECRET_KEY en la misma configuración Run.
 Faltan contraseñas DEMO_* | Completa las cuatro variables, con al menos 10 caracteres cada una, y reinicia.
 Java 25 no compatible / release 25 | Revisa el SDK del proyecto y la JRE de Run. mvn -v también debe mostrar Java 25.
 Port 8087 already in use | Detén otra instancia del portal. Si eliges APP_PORT=8088, abre el navegador en ese puerto.

@@ -31,7 +31,7 @@ public class CaptchaService {
     private final RestClient google;
 
     public CaptchaService(Environment environment) {
-        mode = environment.getProperty("app.captcha.mode", "local").trim().toLowerCase(Locale.ROOT);
+        mode = environment.getProperty("app.captcha.mode", "google").trim().toLowerCase(Locale.ROOT);
         siteKey = environment.getProperty("app.captcha.site-key", "");
         secretKey = environment.getProperty("app.captcha.secret-key", "");
         allowedHostnames = Arrays.stream(environment.getProperty(

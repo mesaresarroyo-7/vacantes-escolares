@@ -50,7 +50,10 @@ Abre en IntelliJ la carpeta que contiene `pom.xml`, importa el proyecto Maven y 
 | `DEMO_ADMISSIONS_PASSWORD` | Otra contraseña propia de al menos 10 caracteres. |
 | `DEMO_GUARDIAN_PASSWORD` | Otra contraseña propia de al menos 10 caracteres. |
 | `DEMO_OTHER_PASSWORD` | Otra contraseña propia de al menos 10 caracteres. |
-| `CAPTCHA_MODE` | `local` para el desafío aritmético de demostración. |
+| `CAPTCHA_MODE` | `google` (valor predeterminado). |
+| `RECAPTCHA_SITE_KEY` | Tu clave del sitio Google reCAPTCHA v2. |
+| `RECAPTCHA_SECRET_KEY` | Tu clave secreta Google reCAPTCHA v2. |
+| `RECAPTCHA_HOSTNAMES` | `localhost,127.0.0.1` |
 
 Ejecuta `VacantesApplication` con **Run**. También puedes configurar las mismas variables en tu terminal y ejecutar desde esta carpeta:
 
@@ -73,7 +76,7 @@ El inicializador crea únicamente las cuentas que todavía no existen. Cambiar e
 
 ## Google reCAPTCHA v2
 
-El modo `local` permite probar el proyecto con un desafío aritmético de demostración. Para activar la casilla de Google reCAPTCHA v2, registra tu propio sitio con los dominios `localhost` y `127.0.0.1`, configura las siguientes variables y reinicia la aplicación:
+Este proyecto utiliza **Google reCAPTCHA v2 por defecto**. Antes del primer inicio, registra tu sitio en https://www.google.com/recaptcha/admin/create con tipo v2 y casilla "No soy un robot". Autoriza `localhost` y `127.0.0.1`. Configura las siguientes variables en IntelliJ:
 
 | Variable | Valor |
 | --- | --- |
@@ -82,7 +85,7 @@ El modo `local` permite probar el proyecto con un desafío aritmético de demost
 | `RECAPTCHA_SECRET_KEY` | Tu clave secreta. |
 | `RECAPTCHA_HOSTNAMES` | `localhost,127.0.0.1` |
 
-Las claves se configuran en el equipo de ejecución y no se incluyen en este paquete.
+Las claves se configuran en el equipo de ejecución y no se incluyen en este paquete. Sin ellas, el inicio se detiene con un mensaje de configuración: **no se sustituye Google por el CAPTCHA de números automáticamente**. El modo `local` queda disponible únicamente si se selecciona de forma explícita para demostraciones o pruebas.
 
 ## Pruebas y compilación
 
