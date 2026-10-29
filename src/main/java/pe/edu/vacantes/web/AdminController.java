@@ -54,7 +54,7 @@ public class AdminController {
         }
         target.setEnabled(enabled);
         users.saveAndFlush(target);
-        audit.record(actor.getEmail(), enabled ? "CUENTA_ACTIVADA" : "CUENTA_DESACTIVADA",
+        audit.recordAfterCommit(actor.getEmail(), enabled ? "CUENTA_ACTIVADA" : "CUENTA_DESACTIVADA",
                 target.getId().toString(), "Se actualizó el estado de una cuenta de apoderado.");
         flash.addFlashAttribute("success", enabled ? "La cuenta fue activada." : "La cuenta fue desactivada.");
         return "redirect:/admin/usuarios";

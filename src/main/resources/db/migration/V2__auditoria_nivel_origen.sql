@@ -1,0 +1,3 @@
+ALTER TABLE audit_events
+  ADD COLUMN level VARCHAR(10) NOT NULL DEFAULT 'INFO',
+  ADD COLUMN origin_ip VARCHAR(64);

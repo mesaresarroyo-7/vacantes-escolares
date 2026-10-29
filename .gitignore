@@ -7,3 +7,6 @@
 *.pid
 *.clixml
 /.vscode/
+/logs/
+/application-local.properties
+/vacantes-escolares.jar

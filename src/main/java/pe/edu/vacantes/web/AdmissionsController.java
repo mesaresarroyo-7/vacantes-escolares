@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import pe.edu.vacantes.domain.ApplicationStatus;
 import pe.edu.vacantes.domain.SchoolApplication;
+import pe.edu.vacantes.exception.BusinessException;
 import pe.edu.vacantes.form.ReviewForm;
 import pe.edu.vacantes.repository.SchoolApplicationRepository;
 import pe.edu.vacantes.service.ApplicationService;
@@ -76,6 +77,8 @@ public class AdmissionsController {
             service.review(id, reviewForm, principal.getName());
             flash.addFlashAttribute("success", "La revisión fue guardada y está disponible para el apoderado.");
             return "redirect:/admision/" + id;
+        } catch (BusinessException exception) {
+            throw exception;
         } catch (IllegalArgumentException exception) {
             errors.reject("review.invalid", exception.getMessage());
             return detail(model, service.getForStaff(id));

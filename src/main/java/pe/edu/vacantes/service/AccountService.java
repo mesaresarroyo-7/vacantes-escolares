@@ -53,7 +53,7 @@ public class AccountService {
         } catch (DataIntegrityViolationException duplicate) {
             throw new IllegalArgumentException("No se pudo crear la cuenta. Revisa el correo e inténtalo nuevamente.");
         }
-        audit.record(user.getEmail(), "CUENTA_REGISTRADA", user.getId().toString(),
+        audit.recordAfterCommit(user.getEmail(), "CUENTA_REGISTRADA", user.getId().toString(),
                 "Se creó una cuenta de apoderado.");
         return user;
     }

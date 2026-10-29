@@ -23,6 +23,11 @@ import pe.edu.vacantes.domain.ApplicationStatus;
 import pe.edu.vacantes.domain.Role;
 import pe.edu.vacantes.domain.SchoolApplication;
 import pe.edu.vacantes.domain.UserAccount;
+import pe.edu.vacantes.exception.ApplicationNotFoundException;
+import pe.edu.vacantes.exception.DuplicateApplicationException;
+import pe.edu.vacantes.exception.InvalidApplicationStateException;
+import pe.edu.vacantes.exception.InvalidApplicationStateException.Reason;
+import pe.edu.vacantes.exception.NoVacanciesException;
 import pe.edu.vacantes.form.ApplicationForm;
 import pe.edu.vacantes.form.ReviewForm;
 import pe.edu.vacantes.repository.AcademicOfferRepository;
@@ -108,6 +113,7 @@ public class ApplicationService {
 
     @Transactional(isolation = Isolation.READ_COMMITTED)
     public SchoolApplication create(ApplicationForm form, String email) {
+        audit.record(email, "SOLICITUD_INTENTO_CREAR", null, "Inicio del envío de solicitud.");
         UserAccount guardian = requireGuardian(email);
         // Serialize this guardian's submissions so two simultaneous requests
         // cannot create duplicate active applications for the same student.
@@ -131,19 +137,20 @@ public class ApplicationService {
         addEvent(application, guardian, null, ApplicationStatus.ENVIADA,
                 "El apoderado envió la solicitud de vacante.");
         events.flush();
-        audit.record(guardian.getEmail(), "SOLICITUD_CREADA", application.getId(),
+        audit.recordAfterCommit(guardian.getEmail(), "SOLICITUD_CREADA", application.getId(),
                 application.getReference() + ": solicitud enviada.");
         return forView(application);
     }
 
     @Transactional(isolation = Isolation.READ_COMMITTED)
     public SchoolApplication update(String id, ApplicationForm form, String email) {
+        audit.record(email, "SOLICITUD_INTENTO_EDITAR", id, "Inicio de actualización de solicitud.");
         SchoolApplication application = getForGuardian(id, email);
         UserAccount guardian = application.getGuardian();
         entityManager.lock(guardian, LockModeType.PESSIMISTIC_WRITE);
         requireVersion(application, form.getVersion());
         if (!application.isEditable()) {
-            throw conflict("Esta solicitud ya no admite cambios. Revisa su estado actual.");
+            throw new InvalidApplicationStateException(Reason.NOT_EDITABLE);
         }
         validateStudent(form);
         AcademicOffer offer = requireOffer(form.getOfferId());
@@ -165,18 +172,19 @@ public class ApplicationService {
                         ? "El apoderado subsanó las observaciones y reenvió la solicitud."
                         : "El apoderado actualizó los datos de la solicitud.");
         events.flush();
-        audit.record(guardian.getEmail(), "SOLICITUD_ACTUALIZADA", application.getId(),
+        audit.recordAfterCommit(guardian.getEmail(), "SOLICITUD_ACTUALIZADA", application.getId(),
                 application.getReference() + ": datos actualizados y solicitud enviada.");
         return forView(application);
     }
 
     @Transactional(isolation = Isolation.READ_COMMITTED)
     public void withdraw(String id, Long version, String email) {
+        audit.record(email, "SOLICITUD_INTENTO_RETIRAR", id, "Inicio del retiro de solicitud.");
         SchoolApplication application = getForGuardian(id, email);
         entityManager.lock(application.getGuardian(), LockModeType.PESSIMISTIC_WRITE);
         requireVersion(application, version);
         if (!application.isWithdrawable()) {
-            throw conflict("Esta solicitud ya tiene un resultado definitivo y no puede retirarse.");
+            throw new InvalidApplicationStateException(Reason.NOT_WITHDRAWABLE);
         }
         ApplicationStatus previous = application.getStatus();
         application.setStatus(ApplicationStatus.RETIRADA);
@@ -185,17 +193,18 @@ public class ApplicationService {
         addEvent(application, application.getGuardian(), previous, ApplicationStatus.RETIRADA,
                 "El apoderado retiró la solicitud.");
         events.flush();
-        audit.record(email, "SOLICITUD_RETIRADA", application.getId(),
+        audit.recordAfterCommit(email, "SOLICITUD_RETIRADA", application.getId(),
                 application.getReference() + ": retirada por el apoderado.");
     }
 
     @Transactional(isolation = Isolation.READ_COMMITTED)
     public void review(String id, ReviewForm form, String staffEmail) {
+        audit.record(staffEmail, "SOLICITUD_INTENTO_REVISAR", id, "Inicio de revisión de solicitud.");
         UserAccount reviewer = requireStaff(staffEmail);
         SchoolApplication application = getForStaff(id);
         requireVersion(application, form.getVersion());
         if (!application.isWithdrawable()) {
-            throw conflict("La solicitud tiene un resultado definitivo y ya no admite revisión.");
+            throw new InvalidApplicationStateException(Reason.NOT_REVIEWABLE);
         }
         ApplicationStatus next = form.getStatus();
         if (next == null || !REVIEW_TARGETS.contains(next)) {
@@ -220,8 +229,7 @@ public class ApplicationService {
             }
             if (applications.countByOfferIdAndStatus(offer.getId(), ApplicationStatus.APROBADA)
                     >= offer.getCapacity()) {
-                throw new IllegalArgumentException(
-                        "No quedan vacantes disponibles en este grado. No se guardó la aprobación.");
+                throw new NoVacanciesException();
             }
         }
 
@@ -236,7 +244,7 @@ public class ApplicationService {
         addEvent(application, reviewer, previous, next,
                 note == null ? "Admisiones actualizó el estado a " + next.getLabel() + "." : note);
         events.flush();
-        audit.record(reviewer.getEmail(), "SOLICITUD_REVISADA", application.getId(),
+        audit.recordAfterCommit(reviewer.getEmail(), "SOLICITUD_REVISADA", application.getId(),
                 application.getReference() + ": " + previous.name() + " → " + next.name() + ".");
     }
 
@@ -282,8 +290,7 @@ public class ApplicationService {
     private void ensureNoDuplicate(UserAccount guardian, String document, AcademicOffer offer) {
         if (applications.existsByGuardianIdAndStudentDocumentAndOfferSchoolYearAndStatusIn(
                 guardian.getId(), document, offer.getSchoolYear(), ACTIVE)) {
-            throw new IllegalArgumentException(
-                    "Ya tienes una solicitud activa para este estudiante en el mismo año escolar.");
+            throw new DuplicateApplicationException();
         }
     }
 
@@ -317,7 +324,7 @@ public class ApplicationService {
 
     private void requireVersion(SchoolApplication application, Long version) {
         if (version == null || version.longValue() != application.getVersion()) {
-            throw conflict("La solicitud cambió mientras la revisabas. Actualiza la página antes de continuar.");
+            throw new InvalidApplicationStateException(Reason.STALE_VERSION);
         }
     }
 
@@ -358,12 +365,8 @@ public class ApplicationService {
         return value == null || value.isBlank() ? null : value.trim();
     }
 
-    private ResponseStatusException notFound() {
+    private ApplicationNotFoundException notFound() {
         // Use the same response for an unknown ID and another guardian's ID.
-        return new ResponseStatusException(HttpStatus.NOT_FOUND, "No se encontró la solicitud.");
-    }
-
-    private ResponseStatusException conflict(String message) {
-        return new ResponseStatusException(HttpStatus.CONFLICT, message);
+        return new ApplicationNotFoundException();
     }
 }

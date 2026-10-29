@@ -17,6 +17,8 @@ import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import pe.edu.vacantes.domain.ApplicationStatus;
 import pe.edu.vacantes.domain.SchoolApplication;
+import pe.edu.vacantes.exception.BusinessException;
+import pe.edu.vacantes.exception.InvalidApplicationStateException;
 import pe.edu.vacantes.form.ApplicationForm;
 import pe.edu.vacantes.repository.AcademicOfferRepository;
 import pe.edu.vacantes.service.ApplicationService;
@@ -63,6 +65,8 @@ public class ApplicationController {
             flash.addFlashAttribute("success",
                     "Tu solicitud fue enviada. Puedes consultar su estado desde esta página.");
             return "redirect:/solicitudes/" + application.getId();
+        } catch (BusinessException exception) {
+            throw exception;
         } catch (IllegalArgumentException exception) {
             errors.reject("application.invalid", exception.getMessage());
             return form(model, false, null);
@@ -83,8 +87,7 @@ public class ApplicationController {
     public String edit(@PathVariable String id, Principal principal, Model model) {
         SchoolApplication application = service.getForGuardian(id, principal.getName());
         if (!application.isEditable()) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT,
-                    "Esta solicitud ya no admite cambios. Revisa su estado actual.");
+            throw new InvalidApplicationStateException(InvalidApplicationStateException.Reason.NOT_EDITABLE);
         }
         ApplicationForm applicationForm = new ApplicationForm();
         applicationForm.setOfferId(application.getOffer().getId());
@@ -112,6 +115,8 @@ public class ApplicationController {
             service.update(id, applicationForm, principal.getName());
             flash.addFlashAttribute("success", "Los cambios fueron enviados a admisiones.");
             return "redirect:/solicitudes/" + id;
+        } catch (BusinessException exception) {
+            throw exception;
         } catch (IllegalArgumentException exception) {
             errors.reject("application.invalid", exception.getMessage());
             return form(model, true, id);
