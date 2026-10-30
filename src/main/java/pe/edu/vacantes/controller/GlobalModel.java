@@ -1,4 +1,4 @@
-package pe.edu.vacantes.web;
+package pe.edu.vacantes.controller;
 
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
@@ -6,8 +6,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ModelAttribute;
-import pe.edu.vacantes.domain.Role;
-import pe.edu.vacantes.domain.UserAccount;
+import pe.edu.vacantes.model.Role;
+import pe.edu.vacantes.model.UserAccount;
 import pe.edu.vacantes.repository.UserAccountRepository;
 
 @ControllerAdvice

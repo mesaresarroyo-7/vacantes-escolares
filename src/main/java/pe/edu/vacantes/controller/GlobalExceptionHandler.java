@@ -1,4 +1,4 @@
-package pe.edu.vacantes.web;
+package pe.edu.vacantes.controller;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.persistence.OptimisticLockException;

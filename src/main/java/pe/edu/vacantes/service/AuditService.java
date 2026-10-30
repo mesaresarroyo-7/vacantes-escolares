@@ -15,7 +15,7 @@ import org.springframework.transaction.support.TransactionSynchronizationManager
 import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
-import pe.edu.vacantes.domain.AuditEvent;
+import pe.edu.vacantes.model.AuditEvent;
 import pe.edu.vacantes.repository.AuditEventRepository;
 
 @Service

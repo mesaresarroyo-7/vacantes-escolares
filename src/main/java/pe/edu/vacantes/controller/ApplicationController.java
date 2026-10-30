@@ -1,4 +1,4 @@
-package pe.edu.vacantes.web;
+package pe.edu.vacantes.controller;
 
 import jakarta.validation.Valid;
 import java.security.Principal;
@@ -15,11 +15,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-import pe.edu.vacantes.domain.ApplicationStatus;
-import pe.edu.vacantes.domain.SchoolApplication;
+import pe.edu.vacantes.model.ApplicationStatus;
+import pe.edu.vacantes.model.SchoolApplication;
 import pe.edu.vacantes.exception.BusinessException;
 import pe.edu.vacantes.exception.InvalidApplicationStateException;
-import pe.edu.vacantes.form.ApplicationForm;
+import pe.edu.vacantes.dto.ApplicationForm;
 import pe.edu.vacantes.repository.AcademicOfferRepository;
 import pe.edu.vacantes.service.ApplicationService;
 

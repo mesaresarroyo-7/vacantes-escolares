@@ -1,4 +1,4 @@
-package pe.edu.vacantes.web;
+package pe.edu.vacantes.controller;
 
 import java.security.Principal;
 import org.springframework.data.domain.Sort;
@@ -13,8 +13,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-import pe.edu.vacantes.domain.Role;
-import pe.edu.vacantes.domain.UserAccount;
+import pe.edu.vacantes.model.Role;
+import pe.edu.vacantes.model.UserAccount;
 import pe.edu.vacantes.repository.AuditEventRepository;
 import pe.edu.vacantes.repository.UserAccountRepository;
 import pe.edu.vacantes.service.AuditService;

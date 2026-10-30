@@ -1,4 +1,4 @@
-package pe.edu.vacantes.web;
+package pe.edu.vacantes.controller;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
@@ -14,9 +14,9 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-import pe.edu.vacantes.domain.Role;
-import pe.edu.vacantes.domain.UserAccount;
-import pe.edu.vacantes.form.RegistrationForm;
+import pe.edu.vacantes.model.Role;
+import pe.edu.vacantes.model.UserAccount;
+import pe.edu.vacantes.dto.RegistrationForm;
 import pe.edu.vacantes.repository.UserAccountRepository;
 import pe.edu.vacantes.service.AccountService;
 import pe.edu.vacantes.service.CaptchaService;

@@ -1,5 +1,5 @@
 package pe.edu.vacantes.repository;
-import pe.edu.vacantes.domain.AcademicOffer;
+import pe.edu.vacantes.model.AcademicOffer;
 import org.springframework.data.jpa.repository.*;
 import org.springframework.data.repository.query.Param;
 import jakarta.persistence.LockModeType;

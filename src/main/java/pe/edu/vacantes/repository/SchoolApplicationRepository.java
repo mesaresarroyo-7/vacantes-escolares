@@ -1,5 +1,5 @@
 package pe.edu.vacantes.repository;
-import pe.edu.vacantes.domain.*;
+import pe.edu.vacantes.model.*;
 import org.springframework.data.jpa.repository.*;
 import java.util.*;
 public interface SchoolApplicationRepository extends JpaRepository<SchoolApplication,String> {

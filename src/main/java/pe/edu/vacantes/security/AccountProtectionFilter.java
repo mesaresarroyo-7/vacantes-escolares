@@ -10,7 +10,7 @@ import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
-import pe.edu.vacantes.domain.UserAccount;
+import pe.edu.vacantes.model.UserAccount;
 import pe.edu.vacantes.repository.UserAccountRepository;
 
 public class AccountProtectionFilter extends OncePerRequestFilter {

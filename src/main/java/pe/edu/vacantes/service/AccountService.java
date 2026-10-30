@@ -7,9 +7,9 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import pe.edu.vacantes.domain.Role;
-import pe.edu.vacantes.domain.UserAccount;
-import pe.edu.vacantes.form.RegistrationForm;
+import pe.edu.vacantes.model.Role;
+import pe.edu.vacantes.model.UserAccount;
+import pe.edu.vacantes.dto.RegistrationForm;
 import pe.edu.vacantes.repository.UserAccountRepository;
 
 @Service

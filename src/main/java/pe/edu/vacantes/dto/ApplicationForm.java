@@ -1,4 +1,4 @@
-package pe.edu.vacantes.form;
+package pe.edu.vacantes.dto;
 import jakarta.validation.constraints.*;
 import lombok.*;
 import org.springframework.format.annotation.DateTimeFormat;

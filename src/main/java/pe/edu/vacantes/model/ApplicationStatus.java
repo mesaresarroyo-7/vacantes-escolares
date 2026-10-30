@@ -1,4 +1,4 @@
-package pe.edu.vacantes.domain;
+package pe.edu.vacantes.model;
 public enum ApplicationStatus {
     ENVIADA("Enviada","enviada"), EN_REVISION("En revisión","en-revision"),
     OBSERVADA("Con observaciones","observada"), APROBADA("Aprobada","aprobada"),

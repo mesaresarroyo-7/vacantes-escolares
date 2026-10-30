@@ -1,4 +1,4 @@
-package pe.edu.vacantes.domain;
+package pe.edu.vacantes.model;
 public enum Role {
     APODERADO, ADMISION, ADMIN;
     public String getLabel() {

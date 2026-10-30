@@ -1,4 +1,4 @@
-package pe.edu.vacantes.domain;
+package pe.edu.vacantes.model;
 public enum Grade {
     INICIAL_4("Inicial · 4 años","Inicial"), INICIAL_5("Inicial · 5 años","Inicial"),
     PRIMARIA_1("1.º de primaria","Primaria"), PRIMARIA_2("2.º de primaria","Primaria"),

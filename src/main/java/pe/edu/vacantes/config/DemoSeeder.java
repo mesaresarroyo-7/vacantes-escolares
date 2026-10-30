@@ -1,7 +1,7 @@
 package pe.edu.vacantes.config;
 
-import pe.edu.vacantes.domain.*;
-import pe.edu.vacantes.form.*;
+import pe.edu.vacantes.model.*;
+import pe.edu.vacantes.dto.*;
 import pe.edu.vacantes.repository.*;
 import pe.edu.vacantes.service.ApplicationService;
 import org.springframework.beans.factory.annotation.Value;

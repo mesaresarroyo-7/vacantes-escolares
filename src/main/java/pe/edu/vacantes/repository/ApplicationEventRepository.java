@@ -1,5 +1,5 @@
 package pe.edu.vacantes.repository;
-import pe.edu.vacantes.domain.ApplicationEvent;
+import pe.edu.vacantes.model.ApplicationEvent;
 import org.springframework.data.jpa.repository.*;
 import java.util.List;
 public interface ApplicationEventRepository extends JpaRepository<ApplicationEvent,Long> {

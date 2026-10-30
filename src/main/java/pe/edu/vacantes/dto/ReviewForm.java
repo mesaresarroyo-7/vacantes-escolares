@@ -1,5 +1,5 @@
-package pe.edu.vacantes.form;
-import pe.edu.vacantes.domain.ApplicationStatus;
+package pe.edu.vacantes.dto;
+import pe.edu.vacantes.model.ApplicationStatus;
 import jakarta.validation.constraints.*;
 import lombok.*;
 @Getter @Setter

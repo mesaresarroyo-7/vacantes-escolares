@@ -1,4 +1,4 @@
-package pe.edu.vacantes.domain;
+package pe.edu.vacantes.model;
 import jakarta.persistence.*;
 import lombok.*;
 import java.time.Instant;

@@ -1,4 +1,4 @@
-package pe.edu.vacantes.domain;
+package pe.edu.vacantes.model;
 import jakarta.persistence.*;
 import lombok.*;
 @Entity @Table(name="academic_offers",uniqueConstraints=@UniqueConstraint(columnNames={"grade","school_year","campus"}))

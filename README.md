@@ -4,6 +4,10 @@ Proyecto académico de solicitudes de vacante para un colegio privado peruano, c
 
 Java 25, Spring Boot MVC, Thymeleaf, Spring Security, Spring Data JPA, MySQL y Flyway. Las contraseñas de las cuentas se guardan con hash Argon2. **Google reCAPTCHA v2 es el modo predeterminado.**
 
+## Organización del código
+
+Los paquetes siguen los nombres usados en los ejemplos de clase: `controller` para controladores, `model` para entidades, `dto` para datos de formularios, `service` para reglas de negocio, `repository` para persistencia, `security` para seguridad y `exception` para excepciones. Las vistas Thymeleaf están en `src/main/resources/templates`.
+
 ## Ejecutar la entrega preparada
 
 El ZIP de entrega incluye el código fuente, las guías y `vacantes-escolares.jar`. No incluye instaladores ni atajos `.cmd` o `.ps1`.
