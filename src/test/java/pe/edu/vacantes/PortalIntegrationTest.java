@@ -333,6 +333,19 @@ class PortalIntegrationTest {
     }
 
     @Test
+    void repeatedFailedLoginsBlockEvenTheCorrectPassword() throws Exception {
+        for (int attempt = 0; attempt < 5; attempt++) {
+            mvc.perform(post("/login").with(csrf())
+                    .param("username", GUARDIAN).param("password", "ClaveIncorrecta-2027!"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/login?error"));
+        }
+        mvc.perform(post("/login").with(csrf())
+                .param("username", GUARDIAN).param("password", TEST_PASSWORD))
+            .andExpect(status().isTooManyRequests());
+    }
+
+    @Test
     void injectionLikeUsernameAndDisabledAccountCannotAuthenticate() throws Exception {
         mvc.perform(post("/login").with(csrf())
                 .param("username", "' OR 1=1 --").param("password", TEST_PASSWORD))
